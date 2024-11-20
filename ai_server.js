@@ -47,7 +47,9 @@ const server = http.createServer(async (req, res) => {
         ],
       });
 
-      const result = await chatSession.sendMessage(` ${board}`);
+      const result = await chatSession.sendMessage(
+        ` play tictactoe with me and board ${board} and you are player X and O first and response me 0~8 position`
+      );
       const response = JSON.parse(result.response.text());
       console.log(response);
 
@@ -59,4 +61,4 @@ const server = http.createServer(async (req, res) => {
   }
 });
 let port = process.env.PORT || 5000;
-server.listen(port, () => console.log("server is run at port port"));
+server.listen(port, () => console.log(`server is run at port ${port}`));
