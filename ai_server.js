@@ -44,6 +44,22 @@ const server = http.createServer(async (req, res) => {
               },
             ],
           },
+          {
+            role: "user",
+            parts: [
+              {
+                text: "play tictactoe with me and board ['O','X','X','O','','','','O',''] and you are player X and O first and response me 0~8 position",
+              },
+            ],
+          },
+          {
+            role: "model",
+            parts: [
+              {
+                text: '```json\n{"board": ["O", "X", "X", "O", "", "X", "", "O", ""], "position": 5}\n\n```',
+              },
+            ],
+          },
         ],
       });
 
