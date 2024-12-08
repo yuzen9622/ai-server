@@ -1,6 +1,6 @@
-const { GoogleGenerativeAI } = require("@google/generative-ai");
 const http = require("http");
 const dotenv = require("dotenv");
+const { error } = require("console");
 dotenv.config();
 
 const server = http.createServer(async (req, res) => {
@@ -13,64 +13,45 @@ const server = http.createServer(async (req, res) => {
     });
     req.on("end", async () => {
       console.log(JSON.parse(body).board);
+
       body = JSON.parse(body);
       const board = body.board;
-      const genAI = new GoogleGenerativeAI(process.env.AISTUDIO_API_KEY);
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro-002" });
-      const generationConfig = {
-        temperature: 0,
-        topP: 0.95,
-        topK: 40,
-        maxOutputTokens: 8192,
-        responseMimeType: "application/json",
-      };
-
-      const chatSession = model.startChat({
-        generationConfig,
-        history: [
+      const ai_config = {
+        model: "gpt-4o-mini",
+        messages: [
           {
             role: "user",
-            parts: [
-              {
-                text: "play tictactoe with me and board ['O','X','','','','','','O',''] and you are player X and O first and response me 0~8 position",
-              },
-            ],
-          },
-          {
-            role: "model",
-            parts: [
-              {
-                text: '```json\n{"board": ["O", "X", "X", "", "", "", "", "O", ""], "position": 2}\n\n```',
-              },
-            ],
-          },
-          {
-            role: "user",
-            parts: [
-              {
-                text: "play tictactoe with me and board ['O','X','X','O','','','','O',''] and you are player X and O first and response me 0~8 position",
-              },
-            ],
-          },
-          {
-            role: "model",
-            parts: [
-              {
-                text: '```json\n{"board": ["O", "X", "X", "O", "", "X", "", "O", ""], "position": 5}\n\n```',
-              },
-            ],
+            content: `Play tic-tac-toe with me. Current board: ${board}, you are X. Reply only in JSON:{ "position": number}`,
           },
         ],
+        temperature: 1,
+        max_tokens: 50,
+      };
+      const response = await fetch("https://api.aimlapi.com/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer 8b9638d52dd940cd886b2cb8008a9b25",
+        },
+        body: JSON.stringify(ai_config),
       });
+      const data = await response.json();
+      console.log(data);
+      if (data.statusCode === 429) {
+        res.writeHead(500, { "Content-Type": "application/json" });
+        return res.end(JSON.stringify({ error: "AI limit" }));
+      }
 
-      const result = await chatSession.sendMessage(
-        ` play tictactoe with me and board ${board} and you are player X and O first and response me 0~8 position`
-      );
-      const response = JSON.parse(result.response.text());
-      console.log(response);
-
-      res.writeHead(200, { "Content-Type": "application/json" });
-      res.end(result.response.text());
+      const regex = /```json\n([\s\S]*?)\n```/;
+      const match = data?.choices[0]?.message?.content?.match(regex);
+      if (match) {
+        const resBoard = JSON.parse(match[1].replace(/'/g, '"'));
+        res.writeHead(200, { "Content-Type": "application/json" });
+        return res.end(JSON.stringify(resBoard));
+        console.log(resBoard); // Output: ['O', 'X', 'X', '', '', '', '', 'O', '']
+      }
+      res.writeHead(500, { "Content-Type": "application/json" });
+      return res.end(JSON.stringify({ error: "AI error" }));
     });
   } else {
     res.end("404 Not found");
