@@ -31,7 +31,7 @@ const server = http.createServer(async (req, res) => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: "Bearer 8b9638d52dd940cd886b2cb8008a9b25",
+          Authorization: `Bearer ${process.env.BEARER_AUTH_KEY}`,
         },
         body: JSON.stringify(ai_config),
       });
