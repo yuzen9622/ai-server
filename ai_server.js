@@ -17,8 +17,9 @@ const server = http.createServer(async (req, res) => {
       body = JSON.parse(body);
       const board = body.board;
       const ai_config = {
-        model: "gpt-4o-mini",
+        model: "gpt-4",
         messages: [
+          
           {
             role: "user",
             content: `Play tic-tac-toe with me. Current board: ${board}, you are X. Reply only in JSON:{ "position": number}`,
@@ -41,14 +42,17 @@ const server = http.createServer(async (req, res) => {
         res.writeHead(500, { "Content-Type": "application/json" });
         return res.end(JSON.stringify({ error: "AI limit" }));
       }
-
+    console.log(data.choices[0].message)
       const regex = /```json\n([\s\S]*?)\n```/;
       const match = data?.choices[0]?.message?.content?.match(regex);
       if (match) {
         const resBoard = JSON.parse(match[1].replace(/'/g, '"'));
         res.writeHead(200, { "Content-Type": "application/json" });
         return res.end(JSON.stringify(resBoard));
-        console.log(resBoard); // Output: ['O', 'X', 'X', '', '', '', '', 'O', '']
+       
+      }else if(data?.choices[0]?.message){
+        res.writeHead(200, { "Content-Type": "application/json" });
+        return res.end(data?.choices[0]?.message.content);
       }
       res.writeHead(500, { "Content-Type": "application/json" });
       return res.end(JSON.stringify({ error: "AI error" }));
