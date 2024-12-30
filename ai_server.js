@@ -22,7 +22,7 @@ const server = http.createServer(async (req, res) => {
           
           {
             role: "user",
-            content: `Play tic-tac-toe with me. Current board: ${board}, you are X. Reply only in JSON:{ "position": number}`,
+            content: `Play tic-tac-toe with me. Current board: ${board}, you are X. Reply only in JSON:{ "position": number}(0~8)`,
           },
         ],
         temperature: 1,
