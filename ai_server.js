@@ -14,7 +14,7 @@ dotenv.config(); /** 讀取.env檔案 */
  * 如果沒有取得JSON格式資料，回傳500錯誤
  */
 const server = http.createServer(async (req, res) => {
-  res.setHeader("Access-Control-Allow-Origin", "http://yuzen.9622.github.io/");
+  res.setHeader("Access-Control-Allow-Origin", "https://yuzen.9622.github.io/");
   /** 當url是/play時以及method是post才能進入 */
   if (req.url === "/play" && req.method === "POST") {
     let body = "";
@@ -30,7 +30,6 @@ const server = http.createServer(async (req, res) => {
       const ai_config = {
         model: "gpt-4",
         messages: [
-          
           {
             role: "user",
             content: `Play tic-tac-toe with me. Current board: ${board}, you are X. Reply only in JSON:{ "position": number}(0~8)`,
@@ -53,15 +52,14 @@ const server = http.createServer(async (req, res) => {
         res.writeHead(500, { "Content-Type": "application/json" });
         return res.end(JSON.stringify({ error: "AI limit" }));
       }
-    console.log(data.choices[0].message)
+      console.log(data.choices[0].message);
       const regex = /```json\n([\s\S]*?)\n```/;
       const match = data?.choices[0]?.message?.content?.match(regex);
       if (match) {
         const resBoard = JSON.parse(match[1].replace(/'/g, '"'));
         res.writeHead(200, { "Content-Type": "application/json" });
         return res.end(JSON.stringify(resBoard));
-       
-      }else if(data?.choices[0]?.message){
+      } else if (data?.choices[0]?.message) {
         res.writeHead(200, { "Content-Type": "application/json" });
         return res.end(data?.choices[0]?.message.content);
       }
