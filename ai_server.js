@@ -1,10 +1,21 @@
 const http = require("http");
 const dotenv = require("dotenv");
-const { error } = require("console");
-dotenv.config();
-
+dotenv.config(); /** 讀取.env檔案 */
+/** 創建web server
+ * 設定跨來源資源共用
+ * 當收到data時以Buffer接收
+ * 當data接收完畢時，將data轉成JSON格式
+ * 設定ai_config
+ * 發送post請求到api.aimlapi.com
+ * 獲取回應後，將回應轉成JSON格式
+ * 判斷回應是否為429，如果是則回傳500錯誤
+ * 使用正則表達式取得回應中的JSON格式資料
+ * 如果有取得JSON格式資料，回傳200並回傳JSON格式資料
+ * 如果沒有取得JSON格式資料，回傳500錯誤
+ */
 const server = http.createServer(async (req, res) => {
-  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Origin", "http://yuzen.9622.github.io/");
+  /** 當url是/play時以及method是post才能進入 */
   if (req.url === "/play" && req.method === "POST") {
     let body = "";
 
@@ -61,5 +72,9 @@ const server = http.createServer(async (req, res) => {
     res.end("404 Not found");
   }
 });
+/**
+ * 設定系統端口
+ * 開始監聽port
+ */
 let port = process.env.PORT || 5000;
 server.listen(port, () => console.log(`server is run at port ${port}`));
