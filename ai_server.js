@@ -31,6 +31,11 @@ const server = http.createServer(async (req, res) => {
         model: "gpt-4",
         messages: [
           {
+            role: "system",
+            content:
+              'Welcome to play tic-tac-toe with AI. AI is X Please reply in JSON format: {"position": number}(0~8)',
+          },
+          {
             role: "user",
             content: `Play tic-tac-toe with me. Current board: ${board}, you are X. Reply only in JSON:{ "position": number}(0~8)`,
           },
