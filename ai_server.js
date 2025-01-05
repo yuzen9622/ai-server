@@ -28,12 +28,12 @@ const server = http.createServer(async (req, res) => {
       body = JSON.parse(body);
       const board = body.board;
       const ai_config = {
-        model: "gpt-4",
+        model: "gpt-4o",
         messages: [
           {
             role: "system",
             content:
-              'Welcome to play tic-tac-toe with AI. AI is X Please reply in JSON format: {"position": number}(0~8)',
+              "Welcome to play tic-tac-toe with AI. AI is X , try to win user",
           },
           {
             role: "user",
