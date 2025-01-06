@@ -33,7 +33,7 @@ const server = http.createServer(async (req, res) => {
           {
             role: "system",
             content:
-              "Welcome to play tic-tac-toe with AI. AI is X , try to win user",
+              "Welcome to play tic-tac-toe with AI. AI is X , try to win user and dont go down not empty position",
           },
           {
             role: "user",
